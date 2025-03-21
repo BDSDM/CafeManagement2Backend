@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
+    boolean updateUserStatus(String email, String status);
     User registerUser(User user);
     Optional<User> getUserById(Long id);
     List<User> getAllUsers();

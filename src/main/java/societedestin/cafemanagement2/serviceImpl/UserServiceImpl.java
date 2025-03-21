@@ -1,5 +1,8 @@
 package societedestin.cafemanagement2.serviceImpl;
 
+import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import societedestin.cafemanagement2.dao.UserRepository;
 import societedestin.cafemanagement2.pojo.User;
 import societedestin.cafemanagement2.service.UserService;
@@ -35,12 +38,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(Long id, User updatedUser) {
         return userRepository.findById(id).map(user -> {
+            // Vérifier si l'email existe déjà pour un autre utilisateur
+            Optional<User> existingUserWithEmail = userRepository.findByEmail(updatedUser.getEmail());
+
+            if (existingUserWithEmail.isPresent() && !existingUserWithEmail.get().getId().equals(id)) {
+                // Lancer une exception avec un code d'état HTTP 400 pour une erreur de validation
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "L'email " + updatedUser.getEmail() + " est déjà utilisé par un autre utilisateur.");
+            }
+
+            // Mise à jour des champs autorisés
             user.setName(updatedUser.getName());
             user.setEmail(updatedUser.getEmail());
-            user.setPassword(updatedUser.getPassword());
+            user.setRole(updatedUser.getRole());
+            user.setStatus(updatedUser.getStatus());
+            user.setContactNumber(updatedUser.getContactNumber());
+
             return userRepository.save(user);
         }).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
     }
+
 
     @Override
     public void deleteUser(Long id) {
@@ -49,5 +66,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> getUserByEmail(String email) {
         return userRepository.findByEmail(email);  // Assurez-vous que la méthode findByEmail est définie dans le repository
+    }
+    @Override
+    @Transactional
+    public boolean updateUserStatus(String email, String status) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setStatus(status);  // Mise à jour du statut
+            userRepository.save(user);  // Sauvegarde dans la base de données
+            return true;
+        }
+
+        return false;  // L'utilisateur n'existe pas
     }
 }
