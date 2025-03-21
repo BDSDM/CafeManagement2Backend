@@ -40,7 +40,7 @@ class UserRestImplTest {
         user = new User("John Doe", "1234567890", "john@example.com", "password", "ACTIVE", "USER");
         user.setId(1L);
 
-        userDTO = new UserDTO(1L, "John Doe", "1234567890", "john@example.com", "password");
+        userDTO = new UserDTO(1L, "John Doe", "1234567890", "john@example.com", "password","ACTIVE","USER");
     }
 
     @Test

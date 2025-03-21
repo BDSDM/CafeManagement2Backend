@@ -30,7 +30,7 @@ public class AuthRestImpl implements AuthRest {
 
         // Vérification du mot de passe avec BCryptPasswordEncoder
         if (passwordEncoder.matches(userDTO.getPassword(), user.getPassword())) {
-            return jwtUtil.generateToken(user.getEmail());
+            return jwtUtil.generateToken(user.getEmail(),user.getName());
         } else {
             throw new RuntimeException("Mot de passe incorrect");
         }
