@@ -16,10 +16,12 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    public String generateToken(String email,String name) {
+    public String generateToken(String email,String name,long id,String role) {
         return Jwts.builder()
                 .setSubject(email)
                 .claim("name", name)
+                .claim("id", id)
+                .claim("role",role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
