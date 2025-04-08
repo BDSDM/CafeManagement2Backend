@@ -45,4 +45,24 @@ public class PreferenceController {
     public String getColorPreference(@CookieValue(value = "preferredColor", defaultValue = "white") String preferredColor) {
         return preferredColor;
     }
+    // Endpoint pour supprimer le cookie "preferredColor"
+    @PostMapping("/api/delete-color")
+    public String deleteColorPreference(HttpServletResponse response) {
+        try {
+            // Créez un cookie avec la même clé et une date d'expiration immédiate
+            Cookie colorCookie = new Cookie("preferredColor", "");
+            colorCookie.setMaxAge(0); // Expiration immédiate
+            colorCookie.setPath("/"); // Assurez-vous que le chemin est bien le même que lors de la création
+            colorCookie.setHttpOnly(true);
+            colorCookie.setSecure(false); // Change à true si en HTTPS
+
+            response.addCookie(colorCookie);
+
+            return "Cookie 'preferredColor' supprimé";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Erreur lors de la suppression du cookie: " + e.getMessage();
+        }
+    }
+
 }
