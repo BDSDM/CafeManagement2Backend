@@ -10,7 +10,9 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
     private static final String SECRET_KEY = "MaSuperCléSecrèteTrèsLonguePourJWT123!";
-    private static final long EXPIRATION_TIME = 1000 * 30 * 5; // 5 minutes
+    private static final long EXPIRATION_TIME = 1000 * 10 * 5; // 5 minutes
+    private static final long REFRESH_TOKEN_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 7; // 7 jours pour le Refresh Token
+
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
@@ -27,6 +29,19 @@ public class JwtUtil {
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+    // Générer un Refresh Token
+    public String generateRefreshToken(String email, String name, long id, String role) {
+        return Jwts.builder()
+                .setSubject(email)
+                .claim("name", name)
+                .claim("id", id)
+                .claim("role", role)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_TIME)) // 7 jours
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
 
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);

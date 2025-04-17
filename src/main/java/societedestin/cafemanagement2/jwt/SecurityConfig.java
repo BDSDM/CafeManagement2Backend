@@ -34,7 +34,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/users/register").permitAll() // Accès libre
+                        .requestMatchers("/auth/login", "/users/register","/api/reset-password/request", "/api/reset-password/confirm").permitAll() // Accès libre
                         .anyRequest().authenticated() // Le reste nécessite une authentification
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
